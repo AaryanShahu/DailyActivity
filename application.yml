@@ -1,0 +1,32 @@
+server:
+  port: 7777  
+
+spring:
+  application:
+    name: ApiGatewayKeyCloak
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/Keycloatjwt
+          jwk-set-uri: http://localhost:8080/realms/Keycloatjwt/protocol/openid-connect/certs
+
+keycloak:
+  auth-server-url: http://localhost:8080/auth
+  realm: Keycloatjwt
+  resource: Keycloatjwt
+  bearer-only: true
+
+
+
+spring.cloud.gateway:
+  routes:
+    - id: Employee
+      uri: http://localhost:9021
+      predicates:
+        - Path=/employee/**
+    - id: Receiver
+      uri: http://localhost:9022
+      predicates:
+        - Path=/receiver/**
+  
