@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                              http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <!-- Local Repository Configuration -->
+    <localRepository>${user.home}/.m2/repository</localRepository>
+
+    <!-- Mirrors Configuration: Ensures Maven uses the correct repository -->
+    <mirrors>
+        <mirror>
+            <id>central-mirror</id>
+            <mirrorOf>central</mirrorOf>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <mirrorOfLayouts>default</mirrorOfLayouts>
+        </mirror>
+    </mirrors>
+
+    <!-- Proxy Configuration (if needed) -->
+    <!--
+    <proxies>
+        <proxy>
+            <id>my-proxy</id>
+            <active>true</active>
+            <protocol>http</protocol>
+            <host>proxy.example.com</host>
+            <port>8080</port>
+            <username>proxyuser</username>
+            <password>somepassword</password>
+            <nonProxyHosts>www.google.com|*.example.com</nonProxyHosts>
+        </proxy>
+    </proxies>
+    -->
+
+    <!-- Plugin Repositories: Define where Maven can find plugins -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <!-- Profiles: Optional, but can include specific settings or dependencies -->
+    <profiles>
+        <profile>
+            <id>default</id>
+            <repositories>
+                <repository>
+                    <id>central</id>
+                    <url>https://repo.maven.apache.org/maven2</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+
+    <!-- Active Profiles -->
+    <activeProfiles>
+        <activeProfile>default</activeProfile>
+    </activeProfiles>
+
+</settings>
