@@ -1,0 +1,74 @@
+package com.apigateway.keycloak;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverter;
+import reactor.core.publisher.Flux;
+
+@Configuration
+@EnableWebFluxSecurity
+public class SecurityConfig {
+
+    private static final String AUTHORITIES_CLAIM = "groups"; 
+    private static final String REQUIRED_GROUP = "/Employees";
+    private static final String[] ALLOWED_USERS = {"aaryanshahu@gmail.cpm", "durgesh"}; 
+
+    @Bean
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
+        return serverHttpSecurity.csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .authorizeExchange(exchange -> exchange
+                        .pathMatchers("/employee/**","/receiver/**")
+                        .hasAuthority("ROLE_ALLOWED_USER") 
+                        .anyExchange().authenticated()    
+                )
+                .oauth2ResourceServer(oauth -> oauth
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(reactiveJwtAuthenticationConverter())) 
+                        )
+                .build();
+    }
+/*          For username and emails     */
+    private ReactiveJwtAuthenticationConverter reactiveJwtAuthenticationConverter() {
+        ReactiveJwtAuthenticationConverter converter = new ReactiveJwtAuthenticationConverter();
+
+        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            var username = jwt.getClaimAsString("email");
+
+            if (isAllowedUser(username)) {
+                return Flux.just(new SimpleGrantedAuthority("ROLE_ALLOWED_USER"));
+            }
+
+            return Flux.empty(); 
+        });
+
+        return converter;
+    }
+/* for groups */
+    /*
+    private ReactiveJwtAuthenticationConverter reactiveJwtAuthenticationConverter() {
+        ReactiveJwtAuthenticationConverter converter = new ReactiveJwtAuthenticationConverter();
+
+        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            var groups = jwt.getClaimAsStringList(AUTHORITIES_CLAIM);
+            if (groups != null && groups.contains(REQUIRED_GROUP)) {
+                return Flux.just(new SimpleGrantedAuthority("ROLE_" + REQUIRED_GROUP));  // Convert to Flux
+            }
+            
+            return Flux.empty();
+        });
+
+        return converter;
+    }
+    */
+    private boolean isAllowedUser(String username) {
+        for (String allowedUser : ALLOWED_USERS) {
+            if (allowedUser.equalsIgnoreCase(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
